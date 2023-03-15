@@ -9,7 +9,44 @@ st.set_page_config(layout='wide',page_title='startup analysis')
 df= pd.read_csv('startup_cleaned.csv')
 df['date']=pd.to_datetime(df['date'],errors='coerce')
 
-# ********************  working on investor dropdown   *******************************************************************
+
+# ************************  working on overall analysis    *******************************************************************
+
+def load_overall_analysis():
+    st.title('overall analysis')
+
+    # total invested amount
+
+    total_invested=round(df['amount'].sum(),2)
+
+    # max amount infuse in a start up
+    max_funding=df.groupby('startup')['amount'].max().sort_values(ascending=False).head(1).values[0]
+
+    # avg ticket size
+    avg_funding=df.groupby('startup')['amount'].sum().mean()
+
+    # total funded startup
+
+    num_startups=df['startup'].nunique()
+
+
+    col1,col2,col3,col4=st.columns(4)
+
+
+    # metric for total invested amount
+    with col1:
+        st.metric('Total',str(total_invested)+' cr ')
+
+    with col2:
+        st.metric('Max',str(max_funding)+'cr')
+
+    with col3:
+        st.metric('Avg',str(round(avg_funding))+'cr')
+
+    with col4:
+        st.metric('Funded startup',num_startups)
+
+# ************************  working on investor dropdown   *******************************************************************
 
 def load_investor_details(investor):
     st.title(investor)
@@ -79,7 +116,7 @@ def load_investor_details(investor):
 
 
 
-
+# ***************************************  DROP DOWN MENU  ***********************************************************
 
 st.sidebar.title('startup Funding Analysis')
 
@@ -87,7 +124,13 @@ option=st.sidebar.selectbox('select one',['overall analysis','startup','Investor
 
 if option == 'overall analysis':
 
-    st.title('overall analysis')
+    btn0=st.sidebar.button('show overall analysis')
+
+    #checking button is clicked or not
+
+    if btn0:
+        load_overall_analysis()
+
 
 elif option=='startup':
 
