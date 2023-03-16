@@ -8,6 +8,8 @@ st.set_page_config(layout='wide',page_title='startup analysis')
 #df= pd.read_csv('startup_funding.csv')
 df= pd.read_csv('startup_cleaned.csv')
 df['date']=pd.to_datetime(df['date'],errors='coerce')
+df['month']=df['date'].dt.month
+df['year']=df['date'].dt.year
 
 
 # ************************  working on overall analysis    *******************************************************************
@@ -30,6 +32,7 @@ def load_overall_analysis():
     num_startups=df['startup'].nunique()
 
 
+# use diff col to display these matrix in the columns
     col1,col2,col3,col4=st.columns(4)
 
 
@@ -45,6 +48,37 @@ def load_overall_analysis():
 
     with col4:
         st.metric('Funded startup',num_startups)
+
+    # month on month graph
+
+    st.header('Month on Month graph')
+
+    selected_option=st.selectbox('Select Type',['Total','Count'])
+
+    if selected_option =='Total':
+
+        tempp_df=df.groupby(['year','month'])['amount'].sum().reset_index()
+
+    else:
+
+        tempp_df=df.groupby(['year','month'])['amount'].count().reset_index()
+
+
+    tempp_df['x-axis']=tempp_df['month'].astype('str') + '-' + tempp_df['year'].astype('str')
+
+    fig5,ax5=plt.subplots()
+    ax5.plot(tempp_df['x-axis'],tempp_df['amount'])
+    st.pyplot(fig5)
+
+    # 
+
+
+# ********************************** STARTUP *********************************************************************************
+
+
+
+
+
 
 # ************************  working on investor dropdown   *******************************************************************
 
@@ -124,12 +158,12 @@ option=st.sidebar.selectbox('select one',['overall analysis','startup','Investor
 
 if option == 'overall analysis':
 
-    btn0=st.sidebar.button('show overall analysis')
+    #btn0=st.sidebar.button('show overall analysis')
 
     #checking button is clicked or not
 
-    if btn0:
-        load_overall_analysis()
+    #if btn0:
+    load_overall_analysis()
 
 
 elif option=='startup':
